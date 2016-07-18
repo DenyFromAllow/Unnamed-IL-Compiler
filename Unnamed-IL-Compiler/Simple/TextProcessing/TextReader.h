@@ -34,10 +34,10 @@ public:
 	FORCEINLINE void AddSeparator			(char SeparatorChar)					{ if((uint8) SeparatorChar < 128)SeparatorList[(uint8) SeparatorChar] = true; }
 	FORCEINLINE void DelSeparator			(char SeparatorChar)					{ if((uint8) SeparatorChar < 128)SeparatorList[(uint8) SeparatorChar] = false; }
 	FORCEINLINE void DeleteSeparator		(char SeparatorChar)					{ if((uint8) SeparatorChar < 128)SeparatorList[(uint8) SeparatorChar] = false; }
-	FORCEINLINE void SetIgnoreSeparator		(char SeparatorChar, bool IsSeparator)	{ if((uint8) SeparatorChar < 128)SeparatorList[(uint8) SeparatorChar] = IsSeparator; }
-	FORCEINLINE void AddIgnoreSeparator		(char SeparatorChar)					{ if((uint8) SeparatorChar < 128)SeparatorList[(uint8) SeparatorChar] = true; }
-	FORCEINLINE void DelIgnoreSeparator		(char SeparatorChar)					{ if((uint8) SeparatorChar < 128)SeparatorList[(uint8) SeparatorChar] = false; }
-	FORCEINLINE void DeleteIgnoreSeparator	(char SeparatorChar)					{ if((uint8) SeparatorChar < 128)SeparatorList[(uint8) SeparatorChar] = false; }
+	FORCEINLINE void SetSeparatorChar		(char SeparatorChar, bool IsSeparator)	{ if((uint8) SeparatorChar < 128)SeparatorList[(uint8) SeparatorChar] = IsSeparator; }
+	FORCEINLINE void AddSeparatorChar		(char SeparatorChar)					{ if((uint8) SeparatorChar < 128)SeparatorList[(uint8) SeparatorChar] = true; }
+	FORCEINLINE void DelSeparatorChar		(char SeparatorChar)					{ if((uint8) SeparatorChar < 128)SeparatorList[(uint8) SeparatorChar] = false; }
+	FORCEINLINE void DeleteSeparatorChar	(char SeparatorChar)					{ if((uint8) SeparatorChar < 128)SeparatorList[(uint8) SeparatorChar] = false; }
 	
 	FORCEINLINE void SkipIgnoreChar() { if(!UsingIgnore)return; while((uint8) Data[Pointer] < 128 && IgnoreList[(uint8) Data[Pointer]] && Pointer <= Length)Pointer++; }
 
