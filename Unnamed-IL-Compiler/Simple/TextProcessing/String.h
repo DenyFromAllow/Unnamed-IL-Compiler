@@ -57,6 +57,8 @@ public:
 	explicit SIMPLE_STRING(const uint8 InLength, const int			&In);
 	explicit SIMPLE_STRING(const uint8 InLength, const unsigned int	&In);
 
+	void ToLowerCase();
+	void ToUpperCase();
 
 	SIMPLE_STRING &PushBack (const char				*In);
 	SIMPLE_STRING &PushFront(const char				*In);

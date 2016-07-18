@@ -13,6 +13,7 @@ protected:
 public:
 	void add(const char*str, uint32 num);
 	uint32 find(const char*str);
+	uint32 findPrefix(const char*str);
 	void PrintAll();
 
 };
