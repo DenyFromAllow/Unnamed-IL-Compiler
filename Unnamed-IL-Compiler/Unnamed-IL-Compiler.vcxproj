@@ -23,7 +23,9 @@
     <ClInclude Include="Simple\config.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Utility.cpp" />
     <ClCompile Include="init.cpp" />
+    <ClCompile Include="Memory.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -152,7 +152,7 @@ private:
 		if(!check() || InLength > InMemLength)return nullptr;
 		ElementType *TempPointer = DataPointer;
 		DataPointer = new ElementType[InMemLength];
-		if(TempPointer == nullptr)return nullptr;
+		if(DataPointer == nullptr)return nullptr;
 		Length = InLength;
 		MemLength = InMemLength;
 		return TempPointer;
@@ -310,8 +310,12 @@ public:
 	}
 
 	bool PushBack(const ElementType &InElement) {
-		if((!DataPointer || !MemLength) && !CreateArray(1, 1, InElement)) {
-			return false;
+		if(!DataPointer || !MemLength) {
+			if(CreateArray(1, 1, InElement)) {
+				return true;
+			} else {
+				return false;
+			}
 		} else if(Length < MemLength) {
 			DataPointer[Length++] = InElement;
 		} else {

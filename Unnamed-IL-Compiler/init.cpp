@@ -1,4 +1,5 @@
 #include "main.h"
+
 void InitInstructions() {
 	MainTrie.add("add", 0x01);
 	MainTrie.add("adc", 0x02);
@@ -78,19 +79,45 @@ void InitInstructions() {
 	MainTrie.add("proc", 0xD4);
 	MainTrie.add("ctmp", 0xD6);
 	MainTrie.add("ftmp", 0xD7);
+	MainTrie.add("stkpop", 0xD8);
 
 	MainTrie.add("tmp", 0xFF);
 }
 
 void InitReader() {
-	SourceReader.AddIgnore(' ');
-	SourceReader.AddIgnore('\t');
-	SourceReader.AddSeparator('\n');
-	SourceReader.AddSeparator(';');
-	SourceReader.AddSeparator('(');
-	SourceReader.AddSeparator(')');
-	SourceReader.AddSeparator('[');
-	SourceReader.AddSeparator(']');
-	SourceReader.AddSeparator('{');
-	SourceReader.AddSeparator('}');
+	SourceReader->AddIgnore(' ');
+	SourceReader->AddIgnore('\t');
+	SourceReader->AddSeparator('\n');
+	SourceReader->AddSeparator(';');
+	SourceReader->AddSeparator(',');
+	SourceReader->AddSeparator('(');
+	SourceReader->AddSeparator(')');
+	SourceReader->AddSeparator('[');
+	SourceReader->AddSeparator(']');
+	SourceReader->AddSeparator('<');
+	SourceReader->AddSeparator('>');
+	SourceReader->AddSeparator('{');
+	SourceReader->AddSeparator('}');
+
+	SourceReader->AddSeparator('/');
+
+	SourceReader->AddSeparator('`');
+	SourceReader->AddSeparator('~');
+	SourceReader->AddSeparator('!');
+	SourceReader->AddSeparator('@');
+	SourceReader->AddSeparator('#');
+	SourceReader->AddSeparator('$');
+	SourceReader->AddSeparator('%');
+	SourceReader->AddSeparator('^');
+	SourceReader->AddSeparator('&');
+	SourceReader->AddSeparator('*');
+	SourceReader->AddSeparator('=');
+	SourceReader->AddSeparator('+');
+	SourceReader->AddSeparator('|');
+	SourceReader->AddSeparator('\\');
+	SourceReader->AddSeparator('?');
+	SourceReader->AddSeparator(':');
+	SourceReader->AddSeparator('\"');
+	SourceReader->UsingIgnore = true;
+	SourceReader->UsingSeparator = true;
 }

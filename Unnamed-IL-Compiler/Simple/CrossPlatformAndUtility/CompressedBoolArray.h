@@ -5,8 +5,8 @@ class CompressBoolReference {
 	uint64 index, *Data;
 	FORCEINLINE CompressBoolReference(uint64 InIndex, uint64 *InData) :index(InIndex), Data(InData) { }
 	CompressBoolReference() = delete;
-	CompressBoolReference(CompressBoolReference&&) = delete;
-	CompressBoolReference(const CompressBoolReference&) = delete;
+	//CompressBoolReference(CompressBoolReference&&) = delete;
+	//CompressBoolReference(const CompressBoolReference&) = delete;
 public:
 	FORCEINLINE operator bool() { return bool((Data[index / 64] >> (index % 64)) & 1); }
 	FORCEINLINE bool operator=(bool InBool) {
@@ -20,8 +20,8 @@ public:
 	uint32 *Data;
 	FORCEINLINE CompressBoolReference(uint64 InIndex, uint32 *InData) :index(InIndex), Data(InData) { }
 	CompressBoolReference() = delete;
-	CompressBoolReference(CompressBoolReference&&) = delete;
-	CompressBoolReference(const CompressBoolReference&) = delete;
+	//CompressBoolReference(CompressBoolReference&&) = delete;
+	//CompressBoolReference(const CompressBoolReference&) = delete;
 public:
 	FORCEINLINE operator bool() { return bool((Data[index / 32] >> (index % 32)) & 1); }
 	FORCEINLINE bool operator=(bool InBool) {
@@ -55,5 +55,5 @@ public:
 		for(uint64 i = 0; i < ((Length - 1) / 32 + 1); i++)Data[i] = 0ul;
 	}
 	#endif
-	FORCEINLINE CompressBoolReference &operator[](uint64 index) { return CompressBoolReference(index, Data); }
+	FORCEINLINE CompressBoolReference operator[](uint64 index) { return CompressBoolReference(index, Data); }
 };
