@@ -88,6 +88,7 @@ void InitReader() {
 	SourceReader->AddIgnore(' ');
 	SourceReader->AddIgnore('\t');
 	SourceReader->AddSeparator('\n');
+	SourceReader->AddSeparator('\r');
 	SourceReader->AddSeparator(';');
 	SourceReader->AddSeparator(',');
 	SourceReader->AddSeparator('(');

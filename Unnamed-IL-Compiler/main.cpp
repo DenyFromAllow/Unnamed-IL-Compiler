@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include "main.h"
 using namespace std;
 
@@ -15,7 +16,7 @@ int main() {
 
 	ifstream SourceFile("source",ios::binary);
 	SourceFile.seekg(0, ios::end);
-	uint32 filesize = SourceFile.tellg();
+	uint64 filesize = SourceFile.tellg();
 	char*InFile = new char[filesize + 1];
 	SourceFile.seekg(0, ios::beg);
 	SourceFile.read(InFile, filesize);
@@ -42,6 +43,11 @@ int main() {
 			return 0;
 		}
 		if(Instruction == 0xD0 || Instruction == 0xD1)Ram(Instruction, SourceString);
+		if(source_reader.EndOfText()) {
+			printf("∂¡»°Ω· ¯°£");
+			_getch();
+			return 0;
+		}
 	}
 
 	return 0;

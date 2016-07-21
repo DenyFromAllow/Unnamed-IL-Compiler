@@ -4,20 +4,31 @@ bool check() {
 	bool NextLine = false;
 	while(1) {
 		SourceReader->SkipIgnoreChar();
-		if(SourceReader->GetChar() == '\n') {
+		if(SourceReader->GetChar() == '\r') {
+			SourceReader->Forward();
+			if(SourceReader->GetChar() == '\n')SourceReader->Forward();
+			NextLine = true;
+		} else if(SourceReader->GetChar() == '\n') {
 			SourceReader->Forward(); NextLine = true;
 		} else if(SourceReader->GetChar() == '/') {
 			SourceReader->Forward();
 			if(SourceReader->GetChar() == '/') {
 				SourceReader->SkipLine();
+				SourceReader->Forward();
 				NextLine = true;
+			} else if(SourceReader->GetChar() == '*') {
+				while(1) {
+					SourceReader->SkipUntil('*');
+					SourceReader->Forward();
+					if(SourceReader->GetChar() == '/')break;
+				}
 			} else {
 				printf("/");
 				_getch();
 				exit(0);
 			}
 		} else if(SourceReader->EndOfText()) {
-			printf("EndOfText");
+			printf("意外的文件尾");
 			_getch();
 			exit(0);
 		} else {

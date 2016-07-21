@@ -33,33 +33,33 @@ public:
 
 	SIMPLE_TEMPLETEARRAY_AUTO() { }
 
-	explicit SIMPLE_TEMPLETEARRAY_AUTO(const ElementType* InPointer, const uint64 &InLength) : DataPointer(new ElementType[InLength]), MemLength(InLength), Length(InLength) {
+	explicit SIMPLE_TEMPLETEARRAY_AUTO(const ElementType* InPointer, const uint64 &InLength) : DataPointer((ElementType*) calloc(InLength,sizeof(ElementType))), MemLength(InLength), Length(InLength) {
 		Simple_MemMovs(DataPointer, InPointer, InLength);
 	}
 
 	SIMPLE_TEMPLETEARRAY_AUTO(std::initializer_list<ElementType> InElement) : MemLength((int32) InElement.size()), Length(MemLength) {
-		DataPointer = new ElementType[Length];
+		DataPointer = (ElementType*) calloc(Length,sizeof(ElementType));
 		Simple_MemMovs(DataPointer, InElement.begin(), Length);
 	}
 
-	SIMPLE_TEMPLETEARRAY_AUTO(const ElementType &InElement, const uint64 &InLength) : DataPointer(new ElementType[InLength]), MemLength(InLength), Length(InLength) {
+	SIMPLE_TEMPLETEARRAY_AUTO(const ElementType &InElement, const uint64 &InLength) : DataPointer((ElementType*) calloc(InLength,sizeof(ElementType))), MemLength(InLength), Length(InLength) {
 		for(uint64 index = 0; index < Length; index++) {
 			DataPointer[index] = InElement;
 		}
 	}
 
-	explicit SIMPLE_TEMPLETEARRAY_AUTO(const uint64 &InLength) : DataPointer(new ElementType[InLength]), MemLength(InLength), Length(InLength) {
+	explicit SIMPLE_TEMPLETEARRAY_AUTO(const uint64 &InLength) : DataPointer((ElementType*) calloc(InLength,sizeof(ElementType))), MemLength(InLength), Length(InLength) {
 		for(uint64 index = 0; index < Length; index++) {
 			DataPointer[index] = ElementType();
 		}
 	}
 
-	SIMPLE_TEMPLETEARRAY_AUTO(const SIMPLE_TEMPLETEARRAY_AUTO& In) : DataPointer(new ElementType[In.Length]), MemLength(In.Length), Length(In.Length) {
+	SIMPLE_TEMPLETEARRAY_AUTO(const SIMPLE_TEMPLETEARRAY_AUTO& In) : DataPointer((ElementType*) calloc(In.Length,sizeof(ElementType))), MemLength(In.Length), Length(In.Length) {
 		MemMovs(DataPointer, In.DataPointer, Length);
 	}
 
 	#if defined(_VECTOR_) || defined(_GLIBCXX_VECTOR)
-	SIMPLE_TEMPLETEARRAY_AUTO(const std::vector<ElementType>& In) : DataPointer(new ElementType[In.size()]), MemLength(In.size()), Length(In.size()) {
+	SIMPLE_TEMPLETEARRAY_AUTO(const std::vector<ElementType>& In) : DataPointer((ElementType*) calloc(In.size(),sizeof(ElementType))), MemLength(In.size()), Length(In.size()) {
 		MemMovs<ElementType>(DataPointer, In.begin()._Ptr, Length);
 	}
 	#endif
@@ -69,7 +69,7 @@ public:
 		if(DataPointer == nullptr) {
 			return;
 		}
-		delete[]DataPointer;
+		free(DataPointer);
 		DataPointer = nullptr;
 	}
 
@@ -104,13 +104,13 @@ private:
 		if(InLength > InMemLength)return false;
 		Length = InLength;
 		MemLength = InMemLength;
-		DataPointer = new ElementType[InMemLength];
+		DataPointer = (ElementType*) calloc(InMemLength,sizeof(ElementType));
 		return DataPointer != nullptr;
 	}
 
 	bool resize(const uint64 &InLength, const uint64 &InMemLength) {
 		if(!check() || InLength > InMemLength)return false;
-		ElementType *TempPointer = new ElementType[InMemLength];
+		ElementType *TempPointer = (ElementType*) calloc(InMemLength,sizeof(ElementType));
 		if(TempPointer == nullptr)return false;
 		Simple_MemMovs(TempPointer, DataPointer, SimpleMath_Min2(InLength, Length));
 		clear();
@@ -125,7 +125,7 @@ private:
 		if(InLength > InMemLength)return false;
 		Length = InLength;
 		MemLength = InMemLength;
-		DataPointer = new ElementType[InMemLength];
+		DataPointer = (ElementType*) calloc(InMemLength,sizeof(ElementType));
 		if(DataPointer == nullptr)return false;
 		fill(FillElement);
 		return true;
@@ -133,7 +133,7 @@ private:
 
 	bool resize(const uint64 &InLength, const uint64 &InMemLength, const ElementType &FillElement) {
 		if(!check() || InLength > InMemLength)return false;
-		ElementType *TempPointer = new ElementType[InMemLength];
+		ElementType *TempPointer = (ElementType*) calloc(InMemLength,sizeof(ElementType));
 		if(TempPointer == nullptr)return false;
 		Simple_MemMovs(TempPointer, DataPointer, SimpleMath_Min2(InLength, Length));
 		if(InLength > Length) {
@@ -151,7 +151,7 @@ private:
 	ElementType *ResizeAndGetOldData(const uint64 &InLength, const uint64 &InMemLength) {
 		if(!check() || InLength > InMemLength)return nullptr;
 		ElementType *TempPointer = DataPointer;
-		DataPointer = new ElementType[InMemLength];
+		DataPointer = (ElementType*) calloc(InMemLength,sizeof(ElementType));
 		if(DataPointer == nullptr)return nullptr;
 		Length = InLength;
 		MemLength = InMemLength;
@@ -198,7 +198,7 @@ public:
 	bool CreateArray(const uint64 &InLength, const ElementType &FillElement) {
 		clear();
 		Length = MemLength = InLength;
-		DataPointer = new ElementType[InLength];
+		DataPointer = (ElementType*) calloc(InLength,sizeof(ElementType));
 		if(DataPointer == nullptr)return false;
 		fill(FillElement);
 		return true;

@@ -36,6 +36,7 @@ struct Variable {
 	uint32 DataCount;
 	void* data;
 	Variable* next;
+	~Variable() { }
 };
 
 struct tempVariable {
