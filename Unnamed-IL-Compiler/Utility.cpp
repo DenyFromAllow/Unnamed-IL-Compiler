@@ -37,6 +37,39 @@ bool check() {
 	}
 }
 
+bool checkIgnEOT() {
+	bool NextLine = false;
+	while(1) {
+		SourceReader->SkipIgnoreChar();
+		if(SourceReader->GetChar() == '\r') {
+			SourceReader->Forward();
+			if(SourceReader->GetChar() == '\n')SourceReader->Forward();
+			NextLine = true;
+		} else if(SourceReader->GetChar() == '\n') {
+			SourceReader->Forward(); NextLine = true;
+		} else if(SourceReader->GetChar() == '/') {
+			SourceReader->Forward();
+			if(SourceReader->GetChar() == '/') {
+				SourceReader->SkipLine();
+				SourceReader->Forward();
+				NextLine = true;
+			} else if(SourceReader->GetChar() == '*') {
+				while(1) {
+					SourceReader->SkipUntil('*');
+					SourceReader->Forward();
+					if(SourceReader->GetChar() == '/')break;
+				}
+			} else {
+				printf("/");
+				_getch();
+				exit(0);
+			}
+		} else {
+			return NextLine;
+		}
+	}
+}
+
 VarType getType(String SourceString, uint32 Start) {
 	if(SourceString[Start] == '8'&& SourceString[Start + 1] == 0) {
 		return VarType::i8;

@@ -53,6 +53,7 @@ extern tempVariable* tempVariableList;
 void InitInstructions();
 void InitReader();
 bool check();
+bool checkIgnEOT();
 VarType getType(String SourceString, uint32 Start);
 void* allocByType(VarType type, uint32 count);
 void assignByType(void* pointer, uint64 value, VarType type, uint32 index);

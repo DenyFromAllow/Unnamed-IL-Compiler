@@ -1,11 +1,15 @@
 #include "main.h"
 
 void Ram(uint32 Instruction, String SourceString) {
+	Variable *thisVariable;
 	if(Instruction == 0xD0) {
 		Memory < Variable();
+		thisVariable = &Memory[Memory.length - 1];
 	} else {
 		Stack < Variable();
+		thisVariable = &Stack[Stack.length - 1];
 	}
+	bool IsFirstVariable = true;
 	bool MultiPart = false;
 	VarType type = getType(SourceString, 3);
 	if(type == VarType::none) {
@@ -19,11 +23,7 @@ void Ram(uint32 Instruction, String SourceString) {
 		_getch();
 		exit(0);
 	} else {
-		if(Instruction == 0xD0) {
-			Memory[Memory.length - 1].type = type;
-		} else {
-			Stack[Stack.length - 1].type = type;
-		}
+		thisVariable->type = type;
 	}
 	check();
 	SourceReader->ReadWord(SourceString);
@@ -37,14 +37,44 @@ void Ram(uint32 Instruction, String SourceString) {
 		_getch();
 		exit(0);
 	}
-	if(Instruction == 0xD0) {
-		Memory[Memory.length - 1].name = SourceString;
-	} else {
-		Stack[Stack.length - 1].name = SourceString;
-	}
+	thisVariable->name = SourceString;
 
-	if(!MultiPart) {
+	do {
 		check();
+		if(MultiPart) {
+			SourceReader->ReadWord(SourceString);
+			if(IsFirstVariable) {
+				if(Instruction == 0xD0) {
+					if(SourceString[0] != 'r' || SourceString[1] != 'a' || SourceString[2] != 'm') {
+						printf("error");
+						_getch();
+						exit(0);
+					}
+				} else {
+					if(SourceString[0] != 'r' || SourceString[1] != 'a' || SourceString[2] != 'm') {
+						printf("error");
+						_getch();
+						exit(0);
+					}
+				}
+			}
+			type = getType(SourceString, 3);
+			if(type == VarType::none) {
+				printf("error");
+				_getch();
+				exit(0);
+			} else if(type == VarType::error) {
+				SourceString++;
+				_getch();
+				exit(0);
+			} else if(type == VarType::f || type == VarType::df || type == VarType::ld) {
+				SourceString++;
+				_getch();
+				exit(0);
+			} else {
+				thisVariable->type = type;
+			}
+		}
 		SourceReader->ReadDECNumber(SourceString);
 		bool getCountByData = false;
 		uint32 ElementCount;
@@ -59,7 +89,13 @@ void Ram(uint32 Instruction, String SourceString) {
 			}
 		}
 		VarType DataType;
-		check();
+		checkIgnEOT();
+		if(SourceReader->EndOfText()) {
+			thisVariable->ElementCount = ElementCount;
+			thisVariable->DataCount = 0;
+			thisVariable->data = nullptr;
+			thisVariable->next = nullptr;
+		}
 		SourceReader->ReadWord(SourceString);
 		if(SourceString.IsEmpty()) {
 			DataType = VarType::none;
@@ -71,12 +107,19 @@ void Ram(uint32 Instruction, String SourceString) {
 			}
 			DataType = getType(SourceString, 0);
 			if(DataType == VarType::error || DataType == VarType::none) {
-				if(MainTrie.findPrefix(SourceString.begin()) <= 0xff) {
+				int32 prefix = MainTrie.findPrefix(SourceString.begin());
+				if(prefix <= 0xff) {
 					SourceReader->Back(SourceString.size());
-					Memory[Memory.length - 1].ElementCount = ElementCount;
-					Memory[Memory.length - 1].DataCount = 0;
-					Memory[Memory.length - 1].data = nullptr;
-					Memory[Memory.length - 1].next = nullptr;
+					thisVariable->ElementCount = ElementCount;
+					thisVariable->DataCount = 0;
+					thisVariable->data = nullptr;
+					if(prefix == Instruction&&MultiPart) {
+						IsFirstVariable = false;
+						thisVariable->next = new Variable();
+						thisVariable = thisVariable->next;
+						continue;
+					}
+					thisVariable->next = nullptr;
 					return;
 				}
 				SourceString++;
@@ -96,17 +139,10 @@ void Ram(uint32 Instruction, String SourceString) {
 		SourceReader->ReadSeparator(firstSeparator);
 		if(firstSeparator != '['&&firstSeparator != '('&&firstSeparator != '{'&&firstSeparator != '<') {
 			if(!firstSeparator && DataType == VarType::none && ElementCount) {
-				if(Instruction == 0xD0) {
-					Memory[Memory.length - 1].ElementCount = ElementCount;
-					Memory[Memory.length - 1].DataCount = 0;
-					Memory[Memory.length - 1].data = nullptr;
-					Memory[Memory.length - 1].next = nullptr;
-				} else {
-					Stack[Stack.length - 1].ElementCount = ElementCount;
-					Stack[Stack.length - 1].DataCount = 0;
-					Stack[Stack.length - 1].data = nullptr;
-					Stack[Stack.length - 1].next = nullptr;
-				}
+				thisVariable->ElementCount = ElementCount;
+				thisVariable->DataCount = 0;
+				thisVariable->data = nullptr;
+				thisVariable->next = nullptr;
 				return;
 			}
 			printf("error");
@@ -117,6 +153,7 @@ void Ram(uint32 Instruction, String SourceString) {
 		uint32 DataCount = 0;
 
 		for(char Separator;;) {
+			check();
 			SourceReader->SkipUntilSeparator();
 			SourceReader->ReadSeparator(Separator);
 			if(Separator == ',') {
@@ -141,32 +178,19 @@ void Ram(uint32 Instruction, String SourceString) {
 			check();
 			SourceReader->ReadSeparator(Separator);
 			if(SourceString.IsEmpty() && ElementCount && Separator) {
-				if(Instruction == 0xD0) {
-					Memory[Memory.length - 1].ElementCount = ElementCount;
-					Memory[Memory.length - 1].DataCount = 0;
-					Memory[Memory.length - 1].data = nullptr;
-					Memory[Memory.length - 1].next = nullptr;
-				} else {
-					Stack[Stack.length - 1].ElementCount = ElementCount;
-					Stack[Stack.length - 1].DataCount = 0;
-					Stack[Stack.length - 1].data = nullptr;
-					Stack[Stack.length - 1].next = nullptr;
-				}
+				thisVariable->ElementCount = ElementCount;
+				thisVariable->DataCount = 0;
+				thisVariable->data = nullptr;
+				thisVariable->next = nullptr;
 			} else if(!SourceString.IsEmpty() && Separator) {
 				if(DataType > type) {
 					printf("Too many data");
 					_getch();
 					exit(0);
 				}
-				if(Instruction == 0xD0) {
-					Memory[Memory.length - 1].ElementCount = (ElementCount) ? ElementCount : 1;
-					Memory[Memory.length - 1].DataCount = 1;
-					Memory[Memory.length - 1].next = nullptr;
-				} else {
-					Stack[Stack.length - 1].ElementCount = (ElementCount) ? ElementCount : 1;
-					Stack[Stack.length - 1].DataCount = 1;
-					Stack[Stack.length - 1].next = nullptr;
-				}
+				thisVariable->ElementCount = (ElementCount) ? ElementCount : 1;
+				thisVariable->DataCount = 1;
+				thisVariable->next = nullptr;
 				uint64 value;
 				SourceString.DECToint64(*((int64*) &value));
 				if(type == VarType::ptr) {
@@ -182,20 +206,33 @@ void Ram(uint32 Instruction, String SourceString) {
 						}
 					}
 				} else {
-					if(Instruction == 0xD0) {
-						Memory[Memory.length - 1].data = allocByType(type, 1);
-						assignByType(Memory[Memory.length - 1].data, 0, type, 0);
-						assignByType(Memory[Memory.length - 1].data, value, DataType, 0);
-					} else {
-						Stack[Stack.length - 1].data = allocByType(type, 1);
-						assignByType(Stack[Stack.length - 1].data, 0, type, 0);
-						assignByType(Stack[Stack.length - 1].data, value, DataType, 0);
-					}
+					thisVariable->data = allocByType(type, 1);
+					assignByType(thisVariable->data, 0, type, 0);
+					assignByType(thisVariable->data, value, DataType, 0);
 				}
 			} else {
 				printf("error");
 				_getch();
 				exit(0);
+			}
+			if(MultiPart) {
+				checkIgnEOT();
+				SourceReader->GetWord(SourceString);
+				if(SourceString.IsEmpty()) {
+					return;
+				} else if(Instruction == 0xD0) {
+					if(SourceString[0] != 'r' || SourceString[1] != 'a' || SourceString[2] != 'm') {
+						return;
+					}
+				} else {
+					if(SourceString[0] != 'r' || SourceString[1] != 'a' || SourceString[2] != 'm') {
+						return;
+					}
+				}
+				IsFirstVariable = false;
+				thisVariable->next = new Variable();
+				thisVariable = thisVariable->next;
+				continue;
 			}
 			return;
 		}
@@ -215,19 +252,11 @@ void Ram(uint32 Instruction, String SourceString) {
 			}
 		}
 
-		if(Instruction == 0xD0) {
-			Memory[Memory.length - 1].data = allocByType(type, TrueDataCount);
-			assignByType(Memory[Memory.length - 1].data, 0ll, type, TrueDataCount - 1);
-			Memory[Memory.length - 1].ElementCount = ElementCount;
-			Memory[Memory.length - 1].DataCount = TrueDataCount;
-			Memory[Memory.length - 1].next = nullptr;
-		} else {
-			Stack[Stack.length - 1].data = allocByType(type, TrueDataCount);
-			assignByType(Stack[Stack.length - 1].data, 0ll, type, TrueDataCount - 1);
-			Stack[Stack.length - 1].ElementCount = ElementCount;
-			Stack[Stack.length - 1].DataCount = TrueDataCount;
-			Stack[Stack.length - 1].next = nullptr;
-		}
+		thisVariable->data = allocByType(type, TrueDataCount);
+		assignByType(thisVariable->data, 0ll, type, TrueDataCount - 1);
+		thisVariable->ElementCount = ElementCount;
+		thisVariable->DataCount = TrueDataCount;
+		thisVariable->next = nullptr;
 
 		for(uint32 DataIndex = 0;; DataIndex++) {
 			char Separator;
@@ -242,13 +271,26 @@ void Ram(uint32 Instruction, String SourceString) {
 			} else {
 				uint64 value;
 				SourceString.DECToint64(*((int64*) &value));
-				if(Instruction == 0xD0) {
-					assignByType(Memory[Memory.length - 1].data, value, DataType, DataIndex);
-				} else {
-					assignByType(Stack[Stack.length - 1].data, value, DataType, DataIndex);
-				}
+				assignByType(thisVariable->data, value, DataType, DataIndex);
 				if(Separator != ',')break;
 			}
 		}
-	}
+		if(!MultiPart)return;
+		checkIgnEOT();
+		SourceReader->GetWord(SourceString);
+		if(SourceString.IsEmpty()) {
+			return;
+		} else if(Instruction == 0xD0) {
+			if(SourceString[0] != 'r' || SourceString[1] != 'a' || SourceString[2] != 'm') {
+				return;
+			}
+		} else {
+			if(SourceString[0] != 'r' || SourceString[1] != 'a' || SourceString[2] != 'm') {
+				return;
+			}
+		}
+		IsFirstVariable = false;
+		thisVariable->next = new Variable();
+		thisVariable = thisVariable->next;
+	} while(MultiPart);
 }
