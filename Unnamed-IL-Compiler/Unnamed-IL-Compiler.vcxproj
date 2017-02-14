@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="enum.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Simple\config.h" />
   </ItemGroup>

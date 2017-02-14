@@ -32,6 +32,8 @@ public:
 	FORCEINLINE char *end()   const { return StringPointer + Last; }
 	FORCEINLINE void clear() { if(StringPointer)delete[]StringPointer; First = Last = MemLength = 0; StringPointer = nullptr; }
 	FORCEINLINE bool IsEmpty() { return !StringPointer || !MemLength || First >= Last || !(*begin()); }
+	FORCEINLINE bool operator!() { return !StringPointer || !MemLength || First >= Last || !(*begin()); }
+	FORCEINLINE operator bool() { return StringPointer && MemLength && First < Last && *begin(); }
 
 	FORCEINLINE SIMPLE_STRING() { }
 	FORCEINLINE ~SIMPLE_STRING() { clear(); }
@@ -104,6 +106,11 @@ public:
 	FORCEINLINE SIMPLE_STRING &PushBack(const uint8 InLength, const uint64			&In) { char buffer[256]; SimpleTP_Uint64ToString(buffer, InLength, In); return PushBack(buffer); }
 	FORCEINLINE SIMPLE_STRING &PushBack(const uint8 InLength, const int				&In) { char buffer[257]; SimpleTP_Int32ToString (buffer, InLength, In); return PushBack(buffer); }
 	FORCEINLINE SIMPLE_STRING &PushBack(const uint8 InLength, const unsigned int	&In) { char buffer[256]; SimpleTP_Uint32ToString(buffer, InLength, In); return PushBack(buffer); }
+
+	FORCEINLINE void PopBack() { Last--; StringPointer[Last] = 0; }
+	FORCEINLINE void PopBack(const uint32 InLength) { Last -= InLength; StringPointer[Last] = 0; }
+	FORCEINLINE void PopFront() { First++; }
+	FORCEINLINE void PopFront(const uint32 InLength) { First += InLength; }
 
 	bool OCTToint32(int32 &Out);
 	bool DECToint32(int32 &Out);

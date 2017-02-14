@@ -5,13 +5,15 @@
 using namespace std;
 
 SIMPLE_TRIETREE MainTrie;
+SIMPLE_TRIETREE TypeTrie;
 ofstream OutFile;
 SIMPLE_TEXTREADER *SourceReader;
-AArray<Variable> Stack, Memory;
+//AArray<Variable> Stack, Memory;
 tempVariable* tempVariableList = nullptr;
-bool InProc = false;
+bool InFunction = false;
 
 int main() {
+	InitInstructions();
 	InitInstructions();
 
 	ifstream SourceFile("source",ios::binary);
@@ -29,20 +31,24 @@ int main() {
 
 	ofstream TempFile("TEMPFILE");
 	String SourceString;
+	String LowerSourceString;
 	while(1) {
 		check();
 		source_reader.ReadWord(SourceString);
-		SourceString.ToLowerCase();
-		int32 Instruction = MainTrie.findPrefix(SourceString.begin());
+		LowerSourceString = SourceString;
+		LowerSourceString.ToLowerCase();
+		uint32 Instruction = MainTrie.findPrefix(LowerSourceString.begin());
 		if(!Instruction) {
-			if(SourceString.IsEmpty()) {
-				SourceString = ".....";
+			uint32 type = ReadType(SourceString);
+			if(!type) {
+				if(SourceString.IsEmpty()) {
+					SourceString = ".....";
+				}
+				SourceString++;
+				_getch();
+				return 0;
 			}
-			SourceString++;
-			_getch();
-			return 0;
-		}
-		if(Instruction == 0xD0 || Instruction == 0xD1)Ram(Instruction, SourceString);
+		} else if(Instruction == 0xD0 || Instruction == 0xD1)ReadMemoryText(Instruction, SourceString);
 		if(source_reader.EndOfText()) {
 			printf("∂¡»°Ω· ¯°£");
 			_getch();

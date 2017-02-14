@@ -37,51 +37,50 @@ void InitInstructions() {
 	MainTrie.add("call", 0x28);
 	MainTrie.add("ret", 0x29);
 	MainTrie.add("jmp", 0x2A);
-	MainTrie.add("ja", 0x2B);
-	MainTrie.add("jb", 0x2C);
-	MainTrie.add("jg", 0x2D);
-	MainTrie.add("jl", 0x2E);
-	MainTrie.add("jna", 0x2F);
-	MainTrie.add("jnb", 0x30);
-	MainTrie.add("jng", 0x31);
-	MainTrie.add("jnl", 0x32);
-	MainTrie.add("jae", 0x33);
-	MainTrie.add("jbe", 0x34);
-	MainTrie.add("jge", 0x35);
-	MainTrie.add("jle", 0x36);
-	MainTrie.add("jnae", 0x37);
-	MainTrie.add("jnbe", 0x38);
-	MainTrie.add("jnge", 0x39);
-	MainTrie.add("jnle", 0x3A);
-	MainTrie.add("je", 0x3B);
-	MainTrie.add("jne", 0x3C);
-	MainTrie.add("jz", 0x3D);
-	MainTrie.add("jnz", 0x3E);
-	MainTrie.add("js", 0x3F);
-	MainTrie.add("jns", 0x40);
-	MainTrie.add("jc", 0x41);
-	MainTrie.add("jnc", 0x42);
-	MainTrie.add("jo", 0x43);
-	MainTrie.add("jno", 0x44);
-	MainTrie.add("jp", 0x45); MainTrie.add("jpe", 0x45);
-	MainTrie.add("jnp", 0x45); MainTrie.add("jpo", 0x46);
+	MainTrie.add("ja", 0x2B); MainTrie.add("jnbe", 0x2B);
+	MainTrie.add("jb", 0x2C); MainTrie.add("jnae", 0x2C);
+	MainTrie.add("jg", 0x2D); MainTrie.add("jnle", 0x2D);
+	MainTrie.add("jl", 0x2E); MainTrie.add("jnge", 0x2E);
+	MainTrie.add("jae", 0x2F); MainTrie.add("jnb", 0x2F);
+	MainTrie.add("jbe", 0x30); MainTrie.add("jna", 0x30);
+	MainTrie.add("jge", 0x31); MainTrie.add("jnl", 0x31);
+	MainTrie.add("jle", 0x32); MainTrie.add("jng", 0x32);
+	MainTrie.add("je", 0x33); MainTrie.add("jz", 0x33);
+	MainTrie.add("jne", 0x34); MainTrie.add("jnz", 0x34);
+	MainTrie.add("js", 0x35);
+	MainTrie.add("jns", 0x36);
+	MainTrie.add("jc", 0x37);
+	MainTrie.add("jnc", 0x38);
+	MainTrie.add("jo", 0x39);
+	MainTrie.add("jno", 0x3A);
+	MainTrie.add("jp", 0x3B); MainTrie.add("jpe", 0x3B);
+	MainTrie.add("jnp", 0x3C); MainTrie.add("jpo", 0x3C);
 
 	MainTrie.add("dot", 0x8C);
 	MainTrie.add("cross", 0x8F);
 
-	MainTrie.add("reg", 0xA1);
+	MainTrie.add("movs", 0xA1);
+	MainTrie.add("stos", 0xA2);
 
-	MainTrie.add("movs", 0xA2);
-	MainTrie.add("stos", 0xA3);
+	MainTrie.add("reg", 0xA3);
 
-	MainTrie.add("ram", 0xD0);
-	MainTrie.add("stk", 0xD1);
+	MainTrie.add("pop", 0xD2);
+	MainTrie.add("temp", 0xD3);
 	MainTrie.add("proc", 0xD4);
-	MainTrie.add("ctmp", 0xD6);
-	MainTrie.add("ftmp", 0xD7);
-	MainTrie.add("stkpop", 0xD8);
 
-	MainTrie.add("tmp", 0xFF);
+	MainTrie.add("free", 0x101);
+}
+
+void InitTypes() {
+	TypeTrie.add("i8", VarType::i8); TypeTrie.add("byte", VarType::i8);
+	TypeTrie.add("i16", VarType::i16); TypeTrie.add("word", VarType::i16);
+	TypeTrie.add("i32", VarType::i32); TypeTrie.add("dword", VarType::i32);
+	TypeTrie.add("i64", VarType::i64); TypeTrie.add("qword", VarType::i64);
+	TypeTrie.add("i128", VarType::i128);
+	TypeTrie.add("i256", VarType::i256);
+	TypeTrie.add("float", VarType::f);
+	TypeTrie.add("double", VarType::df);
+	TypeTrie.add("longdouble", VarType::ld); TypeTrie.add("ld", VarType::ld);
 }
 
 void InitReader() {

@@ -23,90 +23,55 @@ bool check() {
 					if(SourceReader->GetChar() == '/')break;
 				}
 			} else {
-				printf("/");
-				_getch();
-				exit(0);
+				throw(ILCException(ILCException::UnexpectedSeparator,'/'));
 			}
+		} else if(SourceReader->GetChar() == ';') {
+			throw(ILCException(ILCException::EndOfCommand));
 		} else if(SourceReader->EndOfText()) {
-			printf("意外的文件尾");
-			_getch();
-			exit(0);
+			throw(ILCException(ILCException::EndOfText));
 		} else {
 			return NextLine;
 		}
 	}
 }
 
-bool checkIgnEOT() {
-	bool NextLine = false;
-	while(1) {
-		SourceReader->SkipIgnoreChar();
-		if(SourceReader->GetChar() == '\r') {
-			SourceReader->Forward();
-			if(SourceReader->GetChar() == '\n')SourceReader->Forward();
-			NextLine = true;
-		} else if(SourceReader->GetChar() == '\n') {
-			SourceReader->Forward(); NextLine = true;
-		} else if(SourceReader->GetChar() == '/') {
-			SourceReader->Forward();
-			if(SourceReader->GetChar() == '/') {
-				SourceReader->SkipLine();
-				SourceReader->Forward();
-				NextLine = true;
-			} else if(SourceReader->GetChar() == '*') {
-				while(1) {
-					SourceReader->SkipUntil('*');
-					SourceReader->Forward();
-					if(SourceReader->GetChar() == '/')break;
-				}
-			} else {
-				printf("/");
-				_getch();
-				exit(0);
+uint32 ReadType(String SourceString) {
+	if(!SourceString)return VarType::null;
+	uint32 type = TypeTrie.find(SourceString.begin());
+	if(type)return type;
+	if(SourceString.size() < 4)return VarType::null;
+	char endChar = *(SourceString.end() - 1);
+	if(endChar>='2'&&endChar<='4') {
+		uint8 components = endChar - '0';
+		if(*(SourceString.end() - 2) == 'v') {
+			SourceString.PopBack(2);
+			type = TypeTrie.find(SourceString.begin());
+			if(type&&type < 0x0F) {
+				return type&((components - 1) << 4);
 			}
-		} else {
-			return NextLine;
+			return VarType::null;
 		}
+		if(SourceString.size()==5&&SourceString[1] == 'v'&&SourceString[2] == 'e'&&SourceString[3] == 'c') {
+			switch(SourceString[0]) {
+				case 'b':type = VarType::b; break;
+				case 'w':type = VarType::w; break;
+				case 'd':type = VarType::d; break;
+				case 'q':type = VarType::q; break;
+				case 'f':type = VarType::f; break;
+				case 'l':type = VarType::df; break;
+			}
+		} else if(SourceString.size() == 6 && SourceString[2] == 'v'&&SourceString[3] == 'e'&&SourceString[4] == 'c') {
+			if(SourceString[2] == 'd'&&SourceString[3] == 'f')type = VarType::df;
+			else if(SourceString[2] == 'l'&&SourceString[3] == 'd')type = VarType::ld;
+		} else {
+			return VarType::null;
+		}
+		return type&((components - 1) << 4);
 	}
+	return VarType::null;
 }
 
-VarType getType(String SourceString, uint32 Start) {
-	if(SourceString[Start] == '8'&& SourceString[Start + 1] == 0) {
-		return VarType::i8;
-	} else if(SourceString[Start] == '1'&& SourceString[Start + 1] == '6'&& SourceString[Start + 2] == 0) {
-		return VarType::i16;
-	} else if(SourceString[Start] == '3'&& SourceString[Start + 1] == '2'&& SourceString[Start + 2] == 0) {
-		return VarType::i32;
-	} else if(SourceString[Start] == '6'&& SourceString[Start + 1] == '4'&& SourceString[Start + 2] == 0) {
-		return VarType::i64;
-	} else if(SourceString[Start] == '1'&& SourceString[Start + 1] == '2'&& SourceString[Start + 2] == '8'&& SourceString[Start + 3] == 0) {
-		return VarType::i128;
-	} else if(SourceString[Start] == '2'&& SourceString[Start + 1] == '5'&& SourceString[Start + 2] == '6'&& SourceString[Start + 3] == 0) {
-		return VarType::i256;
-	} else if(SourceString[Start] == 'b'&& SourceString[Start + 1] == 0) {
-		return VarType::b;
-	} else if(SourceString[Start] == 'w'&& SourceString[Start + 1] == 0) {
-		return VarType::w;
-	} else if(SourceString[Start] == 'd'&& SourceString[Start + 1] == 0) {
-		return VarType::d;
-	} else if(SourceString[Start] == 'q'&& SourceString[Start + 1] == 0) {
-		return VarType::q;
-	} else if(SourceString[Start] == 'f'&& SourceString[Start + 1] == 0) {
-		return VarType::f;
-	} else if(SourceString[Start] == 'd'&& SourceString[Start + 1] == 'f'&& SourceString[Start + 2] == 0) {
-		return VarType::df;
-	} else if(SourceString[Start] == 'l'&& SourceString[Start + 1] == 'd'&& SourceString[Start + 2] == 0) {
-		return VarType::ld;
-	} else if(SourceString[Start] == 'p'&& SourceString[Start + 1] == 't'&& SourceString[Start + 2] == 'r'&& SourceString[Start + 3] == 0) {
-		return VarType::ptr;
-	} else if(SourceString[Start] == 0) {
-		return VarType::none;
-	} else {
-		return VarType::error;
-	}
-}
-
-void* allocByType(VarType type, uint32 count) {
+void* allocByType(uint32 type, uint32 count) {
 	switch(type) {
 		case VarType::i8:
 			return (void*)new uint8[count];
@@ -127,7 +92,7 @@ void* allocByType(VarType type, uint32 count) {
 	}
 }
 
-void assignByType(void* pointer,uint64 value,VarType type, uint32 index) {
+void assignByType(void* pointer,uint64 value, uint32 type, uint32 index) {
 	switch(type) {
 		case VarType::i8:
 			((uint8*) pointer)[index] = (uint8) value;
