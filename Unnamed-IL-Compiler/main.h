@@ -1,6 +1,7 @@
 #pragma once
 #include"Simple\simple.h"
 #include"enum.h"
+#include"structs.h"
 #include <conio.h>
 using namespace Simple;
 
@@ -48,30 +49,19 @@ using uint256 = uint64[4];
 using int128 = int64[2];
 using int256 = int64[4];
 
-struct MemoryData {
-	String name;
-	uint32 size;
-	uint32 dataSize;
-	char* data;
+template<typename T>
+using ILCArray = AArray<T>;
+
+class typeAddressList {
+	ILCArray<MemAllocation> MemoryData;
+	
 };
 
-struct Label {
-	String name;
-	uint32 Pointer;//地址id或函数内地址
-};
-
-struct tempVariable {
-	uint8 index;
-	uint16 LifeRemaining;
-	tempVariable* next;
-};
-
-extern SIMPLE_TRIETREE MainTrie;
-extern SIMPLE_TRIETREE TypeTrie;
+extern SIMPLE_TRIETREE MainDict;
+extern SIMPLE_TRIETREE TypeDict;
 extern SIMPLE_TEXTREADER *SourceReader;
-//extern AArray<Variable> Stack, Memory;
 extern tempVariable* tempVariableList;
-extern bool InFunction = false;
+extern Block *currentBlock;
 
 void InitInstructions();
 void InitTypes();

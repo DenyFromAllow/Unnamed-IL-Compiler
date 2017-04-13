@@ -22,6 +22,7 @@
     <ClInclude Include="enum.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Simple\config.h" />
+    <ClInclude Include="structs.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utility.cpp" />

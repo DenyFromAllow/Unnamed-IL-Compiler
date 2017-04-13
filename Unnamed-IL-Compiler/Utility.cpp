@@ -37,7 +37,7 @@ bool check() {
 
 uint32 ReadType(String SourceString) {
 	if(!SourceString)return VarType::null;
-	uint32 type = TypeTrie.find(SourceString.begin());
+	uint32 type = TypeDict.find(SourceString.begin());
 	if(type)return type;
 	if(SourceString.size() < 4)return VarType::null;
 	char endChar = *(SourceString.end() - 1);
@@ -45,7 +45,7 @@ uint32 ReadType(String SourceString) {
 		uint8 components = endChar - '0';
 		if(*(SourceString.end() - 2) == 'v') {
 			SourceString.PopBack(2);
-			type = TypeTrie.find(SourceString.begin());
+			type = TypeDict.find(SourceString.begin());
 			if(type&&type < 0x0F) {
 				return type&((components - 1) << 4);
 			}

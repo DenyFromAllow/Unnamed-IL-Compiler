@@ -8,13 +8,12 @@ SIMPLE_TRIETREE MainTrie;
 SIMPLE_TRIETREE TypeTrie;
 ofstream OutFile;
 SIMPLE_TEXTREADER *SourceReader;
-//AArray<Variable> Stack, Memory;
 tempVariable* tempVariableList = nullptr;
-bool InFunction = false;
+Block *currentBlock = nullptr;
 
 int main() {
 	InitInstructions();
-	InitInstructions();
+	InitTypes();
 
 	ifstream SourceFile("source",ios::binary);
 	SourceFile.seekg(0, ios::end);
