@@ -25,9 +25,10 @@
     <ClInclude Include="structs.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="directive.cpp" />
+    <ClCompile Include="function.cpp" />
     <ClCompile Include="Utility.cpp" />
     <ClCompile Include="init.cpp" />
-    <ClCompile Include="Memory.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

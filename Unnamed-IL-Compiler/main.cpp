@@ -4,12 +4,13 @@
 #include "main.h"
 using namespace std;
 
-SIMPLE_TRIETREE MainTrie;
-SIMPLE_TRIETREE TypeTrie;
+SIMPLE_TRIETREE MainDict;
+SIMPLE_TRIETREE TypeDict;
+SIMPLE_TRIETREE FunctionDict;
 ofstream OutFile;
 SIMPLE_TEXTREADER *SourceReader;
-tempVariable* tempVariableList = nullptr;
 Block *currentBlock = nullptr;
+String SourceString;
 
 int main() {
 	InitInstructions();
@@ -29,25 +30,23 @@ int main() {
 	InitReader();
 
 	ofstream TempFile("TEMPFILE");
-	String SourceString;
 	String LowerSourceString;
-	while(1) {
+	for(;;) {
 		check();
 		source_reader.ReadWord(SourceString);
-		LowerSourceString = SourceString;
-		LowerSourceString.ToLowerCase();
-		uint32 Instruction = MainTrie.findPrefix(LowerSourceString.begin());
-		if(!Instruction) {
-			uint32 type = ReadType(SourceString);
-			if(!type) {
-				if(SourceString.IsEmpty()) {
-					SourceString = ".....";
+		if(SourceString) {
+			LowerSourceString = SourceString;
+			LowerSourceString.ToLowerCase();
+			if(uint32 Instruction = MainDict.findPrefix(LowerSourceString.begin())) {
+				if(Instruction > 0x0 && Instruction < 0xc0) {
+
+				} else if(Instruction >= 0xD0 && Instruction <= 0xFF) {
+					ReadDirective(Instruction);
 				}
-				SourceString++;
-				_getch();
-				return 0;
+			} else if(uint32 type = ReadType(SourceString)) {
+
 			}
-		} else if(Instruction == 0xD0 || Instruction == 0xD1)ReadMemoryText(Instruction, SourceString);
+		}
 		if(source_reader.EndOfText()) {
 			printf("¶ÁÈ¡½áÊø¡£");
 			_getch();

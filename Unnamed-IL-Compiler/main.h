@@ -1,9 +1,16 @@
 #pragma once
 #include"Simple\simple.h"
+using namespace Simple;
+using uint128 = uint64[2];
+using uint256 = uint64[4];
+using int128 = int64[2];
+using int256 = int64[4];
+
+template<typename T>
+using ILCArray = AArray<T>;
 #include"enum.h"
 #include"structs.h"
 #include <conio.h>
-using namespace Simple;
 
 class ILCException {
 public:
@@ -44,14 +51,6 @@ FORCEINLINE uint16 sizeOfType(uint32 type) {
 	return sizeArray[(uint8) type];
 }
 
-using uint128 = uint64[2];
-using uint256 = uint64[4];
-using int128 = int64[2];
-using int256 = int64[4];
-
-template<typename T>
-using ILCArray = AArray<T>;
-
 class typeAddressList {
 	ILCArray<MemAllocation> MemoryData;
 	
@@ -59,9 +58,10 @@ class typeAddressList {
 
 extern SIMPLE_TRIETREE MainDict;
 extern SIMPLE_TRIETREE TypeDict;
+extern SIMPLE_TRIETREE FunctionDict;
 extern SIMPLE_TEXTREADER *SourceReader;
-extern tempVariable* tempVariableList;
 extern Block *currentBlock;
+extern String SourceString;
 
 void InitInstructions();
 void InitTypes();
@@ -71,3 +71,5 @@ uint32 ReadType(String SourceString);
 void* allocByType(VarType type, uint32 count);
 void assignByType(void* pointer, uint64 value, VarType type, uint32 index);
 void ReadMemoryText(uint32 Instruction, String SourceString);
+void ReadDirective(uint32 directive);
+void CreateFunction();

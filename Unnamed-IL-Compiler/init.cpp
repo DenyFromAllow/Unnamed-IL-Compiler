@@ -65,7 +65,7 @@ void InitInstructions() {
 	MainDict.add("temp", 0xD2);
 	MainDict.add("reserve", 0xD3);
 	MainDict.add("proc", 0xD4); MainDict.add("func", 0xD4); MainDict.add("process", 0xD4); MainDict.add("function", 0xD4);
-	MainDict.add("except", 0xD600); MainDict.add("unwind", 0xD601);
+	MainDict.add("except", 0xD6); MainDict.add("unwind", 0xD6);
 	MainDict.add("append", 0xD7); MainDict.add("appended", 0xD7); MainDict.add("addition", 0xD7); MainDict.add("additional", 0xD7);
 	MainDict.add("export", 0xD8); MainDict.add("inport", 0xD9);
 	MainDict.add("stack", 0xDA);
